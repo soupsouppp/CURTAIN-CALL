@@ -34,16 +34,30 @@ public class player : MonoBehaviour
     {
         Vector3 pos = transform.position;
 
-        if (Input.GetKey("a"))
+
+
+        if (Input.GetKeyUp("a"))
+        {
+            animator.SetBool("walkingL", false);
+        }
+        else if (Input.GetKey("a"))
         {
             pos.x -= speed * Time.deltaTime;
-            animator.SetTrigger("walkingL");
+            animator.SetBool("walkingL", true);
         }
+
+
         if (Input.GetKey("d"))
         {
             pos.x += speed * Time.deltaTime;
-            animator.SetTrigger("walkingR");
+            animator.SetBool("walkingR", true);
         }
+
+        if (Input.GetKeyUp("d"))
+        {
+            animator.SetBool("walkingR", false);
+        }
+
 
         //jump
         if (isGrounded == true && Input.GetKeyDown("w"))
