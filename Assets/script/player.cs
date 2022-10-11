@@ -56,19 +56,23 @@ public class player : MonoBehaviour
 
         if (rightPresed && upPressed)
         {
-
+            animator.SetBool("RightUp", true);
         }
+        else
+        {
+            animator.SetBool("RightUp", false);
+        }
+
 
         if (upPressed && downPressed)
         {
 
         }
 
-        if(leftPresed && rightPresed)
+        if (leftPresed && rightPresed)
         {
 
-        }
-        
+        }    
         
         
         
