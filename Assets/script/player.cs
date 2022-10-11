@@ -21,21 +21,63 @@ public class player : MonoBehaviour
     private bool isJumping;
 
     public LayerMask Ground;
-    
+
+
+
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
+        
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        bool leftPresed = Input.GetKey(KeyCode.LeftArrow);
+        bool rightPresed = Input.GetKey(KeyCode.RightArrow);
+        bool upPressed = Input.GetKey(KeyCode.UpArrow);
+        bool downPressed = Input.GetKey(KeyCode.DownArrow);
+
+        if (leftPresed && upPressed)
+        {
+            Debug.Log("kicking upleft");
+            animator.SetBool("LeftUp", true);
+        }
+        else
+        {
+            animator.SetBool("LeftUp", false);
+        }
+
+
+        if (rightPresed && upPressed)
+        {
+
+        }
+
+        if (upPressed && downPressed)
+        {
+
+        }
+
+        if(leftPresed && rightPresed)
+        {
+
+        }
+        
+        
+        
+        
+        
+        
         Vector3 pos = transform.position;
 
 
-
+        //movement A D
         if (Input.GetKeyUp("a"))
         {
             animator.SetBool("walkingL", false);
@@ -59,7 +101,7 @@ public class player : MonoBehaviour
         }
 
 
-        //jump
+        //jump W
         if (isGrounded == true && Input.GetKeyDown("w"))
         {
             rb.velocity = Vector2.up * jumpForce;
@@ -93,9 +135,11 @@ public class player : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundcheck.position, checkRadius, Ground);
     }
 
-    void FixedUpdate()
+    private void MakeClone()
     {
-        
 
     }
+    
+    
+    
 }

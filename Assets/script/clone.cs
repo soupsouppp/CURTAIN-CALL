@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class clone : MonoBehaviour
 {
+    public Transform lLeg;
+    public Transform rLeg;
+
+
     // Start is called before the first frame update
     void Start()
     {
