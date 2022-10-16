@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class player : MonoBehaviour
 {
-    Rigidbody2D rb;
-    Animator animator;
+    public Rigidbody2D rb;
+    public Animator animator;
 
     public float speed = 5f;
     public float jumpForce;
@@ -22,18 +22,43 @@ public class player : MonoBehaviour
 
     public LayerMask Ground;
 
+    public GameObject clonePrefab;
 
+    public Transform mylLeg;
+    public Transform myrLeg;
+
+    public GameObject playerControl;
+    public Vector3 moveDir;
+
+    public bool facingL;
+    public bool facingR;
+
+    //private Renderer rend;
+    //[SerializeField]
+    //private Color turnTo = Color.white;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        //rend = GetComponent<Renderer>();
+        //rend.material.color = turnTo;
+    }
 
-        
+    private void move()
+    {
+        float moveX = 0f;
+        float moveZ = 0f;
+
+        if (Input.GetKey(KeyCode.D)) moveX = +1f;
+        if (Input.GetKey(KeyCode.A)) moveX = -1f;
+
+        moveDir = new Vector3(moveX, 0, moveZ).normalized;
+        rb.velocity = moveDir * speed;
+
 
     }
+
 
     // Update is called once per frame
     void Update()
@@ -43,74 +68,30 @@ public class player : MonoBehaviour
         bool upPressed = Input.GetKey(KeyCode.UpArrow);
         bool downPressed = Input.GetKey(KeyCode.DownArrow);
 
-        if (leftPresed && upPressed)
-        {
-            Debug.Log("kicking upleft");
-            animator.SetBool("LeftUp", true);
-        }
-        else
-        {
-            animator.SetBool("LeftUp", false);
-        }
-
-
-        if (rightPresed && upPressed)
-        {
-            animator.SetBool("RightUp", true);
-        }
-        else
-        {
-            animator.SetBool("RightUp", false);
-        }
-
-
-        if (upPressed && downPressed)
-        {
-
-        }
-
-        if (leftPresed && rightPresed)
-        {
-
-        }    
         
+
+
+        //if (upPressed && downPressed)
+        //{
+
+        //}
+
+        //if (leftPresed && rightPresed)
+        //{
+
+        //}
+
+        move();
+        Flip();
+
         
-        
-        
-        
-        Vector3 pos = transform.position;
-
-
-        //movement A D
-        if (Input.GetKeyUp("a"))
-        {
-            animator.SetBool("walkingL", false);
-        }
-        else if (Input.GetKey("a"))
-        {
-            pos.x -= speed * Time.deltaTime;
-            animator.SetBool("walkingL", true);
-        }
-
-
-        if (Input.GetKey("d"))
-        {
-            pos.x += speed * Time.deltaTime;
-            animator.SetBool("walkingR", true);
-        }
-
-        if (Input.GetKeyUp("d"))
-        {
-            animator.SetBool("walkingR", false);
-        }
-
-
         //jump W
-        if (isGrounded == true && Input.GetKeyDown("w"))
+        if (Input.GetKeyDown("w"))
         {
             rb.velocity = Vector2.up * jumpForce;
             isJumping = true;
             counter = jumpTime;
+            animator.SetTrigger("jump");
         }
 
         if (Input.GetKey("w") && isJumping == true)
@@ -126,24 +107,128 @@ public class player : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyUp(KeyCode.W))
+        //isGrounded == true &&
+
+        if (Input.GetKeyUp(KeyCode.W))
         {
             isJumping = false;
         }
 
 
-        transform.position = pos;
-
-
-
+        
         isGrounded = Physics2D.OverlapCircle(groundcheck.position, checkRadius, Ground);
+
+        //clone
+        if (facingR && Input.GetKeyDown(KeyCode.E))
+        {
+            CloneMe();
+
+            float xPos = playerControl.transform.position.x;
+            float yPos = playerControl.transform.position.y;
+
+            xPos -= 2f;
+
+            playerControl.transform.position = new Vector3(xPos, yPos, 0);
+        }
+
+        if (facingL && Input.GetKeyDown(KeyCode.E))
+        {
+            CloneMe();
+
+            float xPos = playerControl.transform.position.x;
+            float yPos = playerControl.transform.position.y;
+
+            xPos += 2f;
+
+            playerControl.transform.position = new Vector3(xPos, yPos, 0);
+        }
     }
 
-    private void MakeClone()
+    
+    private void CloneMe()
     {
+        GameObject cloneCopy = Instantiate(this.gameObject, transform.position, Quaternion.identity);
+
+        player playerCode = cloneCopy.GetComponent<player>();
+
+        playerCode.enabled = false;
+        playerCode.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
 
     }
-    
-    
-    
+
+    private void Flip()
+    {
+        bool playerMoving = Mathf.Abs(rb.velocity.x) > Mathf.Epsilon;
+
+
+
+        bool leftPresed = Input.GetKey(KeyCode.LeftArrow);
+        bool rightPresed = Input.GetKey(KeyCode.RightArrow);
+        bool upPressed = Input.GetKey(KeyCode.UpArrow);
+        bool downPressed = Input.GetKey(KeyCode.DownArrow);
+
+       if (playerMoving)
+        {
+            animator.SetBool("walkingL", true);
+
+            if (rb.velocity.x > 1f)
+            {
+                playerControl.transform.localScale = new Vector3(-1, 1, 1);
+                
+
+                //right
+
+
+            }
+
+            if (rb.velocity.x < -1f)
+            {
+                playerControl.transform.localScale = new Vector3(1, 1, 1);
+                
+
+            }
+
+        }
+        else
+        {
+            animator.SetBool("walkingL", false);
+        }
+
+        /////////////////////////
+        ///
+
+        if (playerControl.transform.localScale.x == -1 )
+        {
+            facingR = true;
+            facingL = false;
+        }
+
+        if (playerControl.transform.localScale.x == 1)
+        {
+            facingR = false;
+            facingL = true;
+        }
+
+        if (facingL && leftPresed && upPressed)
+        {
+            Debug.Log("kicking upleft");
+            animator.SetBool("LeftUp", true);
+        }
+        else
+        {
+            animator.SetBool("LeftUp", false);
+        }
+
+        if (facingR && rightPresed && upPressed)
+        {
+            Debug.Log("kicking upright");
+            animator.SetBool("LeftUp", true);
+        }
+        //else
+        //{
+        //    animator.SetBool("LeftUp", false);
+        //}
+    }
+
 }
+
