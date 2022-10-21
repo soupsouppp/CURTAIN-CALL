@@ -22,27 +22,26 @@ public class player : MonoBehaviour
 
     public LayerMask Ground;
 
-    public GameObject clonePrefab;
-
-    public Transform mylLeg;
-    public Transform myrLeg;
-
     public GameObject playerControl;
     public Vector3 moveDir;
 
     public bool facingL;
     public bool facingR;
 
-    //private Renderer rend;
-    //[SerializeField]
-    //private Color turnTo = Color.white;
+ 
+    
+    [SerializeField]
+    private Color turnTo = Color.white;
+
+    public GameObject Leg1;
+    public GameObject Leg2;
+    public GameObject torso; 
 
 
     // Start is called before the first frame update
     void Start()
     {
-        //rend = GetComponent<Renderer>();
-        //rend.material.color = turnTo;
+        
     }
 
     private void move()
@@ -91,7 +90,7 @@ public class player : MonoBehaviour
             rb.velocity = Vector2.up * jumpForce;
             isJumping = true;
             counter = jumpTime;
-            animator.SetTrigger("jump");
+           
         }
 
         if (Input.GetKey("w") && isJumping == true)
@@ -129,6 +128,13 @@ public class player : MonoBehaviour
             xPos -= 2f;
 
             playerControl.transform.position = new Vector3(xPos, yPos, 0);
+
+
+            Renderer bodyrend = Leg1.GetComponent<Renderer>();
+            Renderer body = Leg2.GetComponent<Renderer>();
+
+            body.material.color = Color.white;
+            bodyrend.material.color = Color.white;
         }
 
         if (facingL && Input.GetKeyDown(KeyCode.E))
@@ -141,18 +147,38 @@ public class player : MonoBehaviour
             xPos += 2f;
 
             playerControl.transform.position = new Vector3(xPos, yPos, 0);
+
+            Renderer bodyrend = Leg1.GetComponent<Renderer>();
+            Renderer body = Leg2.GetComponent<Renderer>();
+
+            body.material.color = Color.white;
+            bodyrend.material.color = Color.white;
+
         }
     }
 
-    
+    //clone
     private void CloneMe()
     {
+        Renderer bodyrend = Leg1.GetComponent<Renderer>();
+        Renderer body = Leg2.GetComponent<Renderer>();
+        //Renderer torso = body.GetComponent<Renderer>();
+
+        body.material.color = turnTo;
+        bodyrend.material.color = turnTo;
+        //torso.material.color = turnTo;
+
+
         GameObject cloneCopy = Instantiate(this.gameObject, transform.position, Quaternion.identity);
 
         player playerCode = cloneCopy.GetComponent<player>();
+        selfDestroy destroyCode = cloneCopy.GetComponent<selfDestroy>();
+
 
         playerCode.enabled = false;
-        playerCode.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        //playerCode.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+        destroyCode.enabled = true;
+
 
     }
 
@@ -185,7 +211,7 @@ public class player : MonoBehaviour
             {
                 playerControl.transform.localScale = new Vector3(1, 1, 1);
                 
-
+                //left
             }
 
         }
